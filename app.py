@@ -128,7 +128,6 @@ for name, outcome in budget_result["scenario_savings"].items():
         "% meta cubierta":outcome["target_coverage_pct"]})
 extra_df=pd.DataFrame(extra).set_index("Escenario")
 st.dataframe(extra_df.style.format({c:"${:,.0f}" for c in extra_df.columns if c!="% meta cubierta"}).format({"% meta cubierta":"{:.1%}"}),use_container_width=True)
-st.warning("NO sumar los ahorros de otros contratos al ROI de Escala sin validación de viabilidad, alcance contractual, costo de implementación y fecha de captura. El ahorro en personal y depreciación se deja en 0 por prudencia. La meta del 15% del gasto TI NO está demostrada.")
 
 st.subheader("Desglose de las tres fases (horas × tarifa)")
 line_items, totals = phase_pricing(config)
