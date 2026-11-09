@@ -294,8 +294,7 @@ with tab_offer:
     ]):
         col.metric(label, metric_usd(value), help=f"Importe exacto: {fmt(value)}")
 
-    st.info(f"**Presupuesto aprobado:** {fmt(shared['approved_budget'])} = **servicios tecnológicos** {fmt(shared['project_investment'])} + **reserva comercial NO comprometida** {fmt(shared['commercial_reserve'])}. La reserva no es ingreso de Escala. Reasignarla a ABM exige autorización de Finanzas.")
-    st.caption("Esta oferta posterior al descubrimiento es distinta del dimensionamiento preliminar mostrado en la primera pestaña. No deben sumarse como contratos independientes.")
+    st.info(f"**Presupuesto aprobado:** {fmt(shared['approved_budget'])} = **servicios tecnológicos** {fmt(shared['project_investment'])} + **reserva comercial** {fmt(shared['commercial_reserve'])}.")
     st.subheader("Comparación de escenarios — tres años")
     rows = []
     for name, s in result["scenarios"].items():
