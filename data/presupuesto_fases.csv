@@ -1,0 +1,12 @@
+﻿fase,meses,componente,presupuesto_usd,fuente
+1,1-3,Seguridad y cumplimiento,220000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+1,1-3,Resiliencia y monitoreo,210000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+1,1-3,FinOps inicial,50000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+1,1-3,Transición del proveedor,40000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+2,4-8,Plataforma de créditos,350000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+2,4-8,Datos regionales,170000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+2,4-8,Automatización,100000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+3,9-12,Datos e IA,80000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+3,9-12,Pruebas y recuperación,130000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+3,9-12,Formación equipo interno,80000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
+3,9-12,Gobernanza y medición,70000,Fenix_Presupuesto_Revisado_1_5M_y_Reserva_300K.xlsx > Alcance tecnológico
