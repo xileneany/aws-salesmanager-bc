@@ -364,5 +364,56 @@
       "amount": 100000,
       "measurement": "Pilotos, propuestas y acuerdos evaluados"
     }
-  ]
+  ],
+  "dimensioning": {
+    "description": "Oportunidad preliminar Parte B; no es la propuesta comercial Parte E.",
+    "assessment_usd": 12000,
+    "managed_months": 9,
+    "managed_monthly_usd": 13500,
+    "multipliers": {
+      "Conservador": 0.75,
+      "Base": 1.0,
+      "Alto": 1.5
+    },
+    "service_lines": [
+      {
+        "category": "Cloud Security & Compliance",
+        "activity": "Remediación de accesos, cifrado y controles",
+        "hours": 600,
+        "hourly_rate_usd": 150
+      },
+      {
+        "category": "Cloud Operations & Reliability",
+        "activity": "Ingeniería de resiliencia y monitoreo",
+        "hours": 600,
+        "hourly_rate_usd": 140
+      },
+      {
+        "category": "Cloud Infrastructure & FinOps",
+        "activity": "Rightsizing y optimización AWS",
+        "hours": 280,
+        "hourly_rate_usd": 125
+      },
+      {
+        "category": "Application Modernization",
+        "activity": "Mejora inicial de plataforma de créditos",
+        "hours": 1200,
+        "hourly_rate_usd": 145
+      },
+      {
+        "category": "Data Integration & Analytics",
+        "activity": "Integración regional de datos",
+        "hours": 750,
+        "hourly_rate_usd": 140
+      },
+      {
+        "category": "DevOps & Developer Productivity",
+        "activity": "Pipelines y capacitación",
+        "hours": 320,
+        "hourly_rate_usd": 135
+      }
+    ],
+    "source": "Grupo_Fenix_Dimensionamiento_12M_Con_Recursos.xlsx, hojas Supuestos y Servicios Escala",
+    "interpretation": "Factor de alcance solo cambia horas, no assessment único o meses de servicios administrados."
+  }
 }
