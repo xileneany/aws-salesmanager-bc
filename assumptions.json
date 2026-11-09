@@ -366,10 +366,10 @@
     }
   ],
   "dimensioning": {
-    "description": "Oportunidad preliminar Parte B; no es la propuesta comercial Parte E.",
+    "description": "Oportunidad preliminar Parte B: USD 664,700 en 12 meses, soporte desde el mes 1. Supuesto revisado; no cotización Escala.",
     "assessment_usd": 12000,
-    "managed_months": 9,
-    "managed_monthly_usd": 13500,
+    "managed_months": 12,
+    "managed_monthly_usd": 10125,
     "multipliers": {
       "Conservador": 0.75,
       "Base": 1.0,
@@ -413,7 +413,7 @@
         "hourly_rate_usd": 135
       }
     ],
-    "source": "Grupo_Fenix_Dimensionamiento_12M_Con_Recursos.xlsx, hojas Supuestos y Servicios Escala",
-    "interpretation": "Factor de alcance solo cambia horas, no assessment único o meses de servicios administrados."
+    "source": "Grupo_Fenix_Dimensionamiento_12M_Con_Recursos.xlsx (revisión 12 mensualidades); caso entregado por el usuario.",
+    "interpretation": "Engineering × factor; assessment USD 12,000 y soporte 12 × USD 10,125 constantes. La nueva mensualidad sustituye la referencia anterior de 9 × USD 13,500 para conservar USD 121,500 de soporte en 12 meses."
   }
 }
