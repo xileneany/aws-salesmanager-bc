@@ -1,0 +1,368 @@
+{
+  "project": "Grupo Fénix | Propuesta revisada USD 1.5M tecnología + USD 300K reserva comercial",
+  "currency": "USD",
+  "financial_inputs": {
+    "annual_company_revenue": 800000000,
+    "annual_it_spend": 20000000,
+    "monthly_aws_cost": 180000,
+    "it_savings_target_percent": 0.15,
+    "working_days_per_year": 250,
+    "operating_hours_per_day": 10,
+    "revenue_exposed_to_order_system_percent": 0.5,
+    "unrecoverable_revenue_during_outage_percent": 0.5,
+    "contribution_margin_on_lost_revenue_percent": 0.25,
+    "monthly_credit_applications": 1000,
+    "net_incremental_margin_per_extra_approved_credit": 800,
+    "monthly_incremental_support_after_year_1": 13500,
+    "monthly_incremental_cloud_cost": 0,
+    "annual_discount_rate": 0.12,
+    "start_month_outage_improvements": 4,
+    "start_month_aws_savings": 5,
+    "start_month_credit_conversion": 9,
+    "first_year_project_cost": 1500000,
+    "analysis_horizon_months": 36,
+    "payback_horizon_months": 120,
+    "approved_modernization_budget": 1800000,
+    "commercial_reserve": 300000,
+    "include_reserve_in_roi": false,
+    "benefit_realization_factor": 1.0
+  },
+  "scenarios": {
+    "Conservador": {
+      "aws_savings_pct": 0.1,
+      "avoided_outage_hours_annually": 6,
+      "credit_conversion_uplift_pp": 2
+    },
+    "Base": {
+      "aws_savings_pct": 0.15,
+      "avoided_outage_hours_annually": 12,
+      "credit_conversion_uplift_pp": 5
+    },
+    "Alto": {
+      "aws_savings_pct": 0.2,
+      "avoided_outage_hours_annually": 18,
+      "credit_conversion_uplift_pp": 8
+    }
+  },
+  "phase_line_items": [
+    {
+      "phase": 1,
+      "months": "1-3",
+      "workstream": "Seguridad y cumplimiento",
+      "role": "Especialista en seguridad AWS",
+      "hours": 800,
+      "hourly_rate": 150
+    },
+    {
+      "phase": 1,
+      "months": "1-3",
+      "workstream": "Seguridad y cumplimiento",
+      "role": "Ingeniería de seguridad",
+      "hours": 800,
+      "hourly_rate": 125
+    },
+    {
+      "phase": 1,
+      "months": "1-3",
+      "workstream": "Resiliencia y monitoreo de sistemas críticos",
+      "role": "Arquitectura cloud",
+      "hours": 1000,
+      "hourly_rate": 150
+    },
+    {
+      "phase": 1,
+      "months": "1-3",
+      "workstream": "Resiliencia y monitoreo de sistemas críticos",
+      "role": "Ingeniería de operaciones",
+      "hours": 480,
+      "hourly_rate": 125
+    },
+    {
+      "phase": 1,
+      "months": "1-3",
+      "workstream": "FinOps inicial",
+      "role": "Analista FinOps",
+      "hours": 400,
+      "hourly_rate": 125
+    },
+    {
+      "phase": 1,
+      "months": "1-3",
+      "workstream": "Transición del proveedor",
+      "role": "Gestión de proyecto",
+      "hours": 320,
+      "hourly_rate": 125
+    },
+    {
+      "phase": 2,
+      "months": "4-8",
+      "workstream": "Plataforma de créditos",
+      "role": "Desarrollo e ingeniería",
+      "hours": 1800,
+      "hourly_rate": 150
+    },
+    {
+      "phase": 2,
+      "months": "4-8",
+      "workstream": "Plataforma de créditos",
+      "role": "Arquitectura de aplicaciones",
+      "hours": 400,
+      "hourly_rate": 200
+    },
+    {
+      "phase": 2,
+      "months": "4-8",
+      "workstream": "Primera integración regional de datos",
+      "role": "Ingeniería de datos",
+      "hours": 1000,
+      "hourly_rate": 140
+    },
+    {
+      "phase": 2,
+      "months": "4-8",
+      "workstream": "Primera integración regional de datos",
+      "role": "Arquitectura de datos",
+      "hours": 150,
+      "hourly_rate": 200
+    },
+    {
+      "phase": 2,
+      "months": "4-8",
+      "workstream": "Automatización priorizada",
+      "role": "Ingeniería de operaciones",
+      "hours": 500,
+      "hourly_rate": 140
+    },
+    {
+      "phase": 2,
+      "months": "4-8",
+      "workstream": "Automatización priorizada",
+      "role": "Especialista FinOps",
+      "hours": 200,
+      "hourly_rate": 150
+    },
+    {
+      "phase": 3,
+      "months": "9-12",
+      "workstream": "Datos e IA (piloto condicionado)",
+      "role": "Ingeniería de datos",
+      "hours": 400,
+      "hourly_rate": 150
+    },
+    {
+      "phase": 3,
+      "months": "9-12",
+      "workstream": "Datos e IA (piloto condicionado)",
+      "role": "Especialista IA",
+      "hours": 100,
+      "hourly_rate": 200
+    },
+    {
+      "phase": 3,
+      "months": "9-12",
+      "workstream": "Pruebas y recuperación",
+      "role": "Ingeniería de confiabilidad",
+      "hours": 600,
+      "hourly_rate": 150
+    },
+    {
+      "phase": 3,
+      "months": "9-12",
+      "workstream": "Pruebas y recuperación",
+      "role": "Especialista seguridad",
+      "hours": 200,
+      "hourly_rate": 200
+    },
+    {
+      "phase": 3,
+      "months": "9-12",
+      "workstream": "Formación del equipo interno",
+      "role": "Formación técnica",
+      "hours": 400,
+      "hourly_rate": 150
+    },
+    {
+      "phase": 3,
+      "months": "9-12",
+      "workstream": "Formación del equipo interno",
+      "role": "Documentación",
+      "hours": 200,
+      "hourly_rate": 100
+    },
+    {
+      "phase": 3,
+      "months": "9-12",
+      "workstream": "Gobernanza y medición",
+      "role": "Gestión de proyecto",
+      "hours": 400,
+      "hourly_rate": 150
+    },
+    {
+      "phase": 3,
+      "months": "9-12",
+      "workstream": "Gobernanza y medición",
+      "role": "Soporte reporting",
+      "hours": 100,
+      "hourly_rate": 100
+    }
+  ],
+  "project_phase_budgets": {
+    "1": 520000,
+    "2": 620000,
+    "3": 360000
+  },
+  "input_provenance": {
+    "annual_company_revenue": "Dato del caso Fénix: facturación del grupo de USD 800M/año.",
+    "monthly_aws_cost": "Dato del caso Fénix: AWS USD 180K/mes.",
+    "annual_it_spend": "Supuesto nuevo USD20M/año. AWS USD2.16M/año / USD20M = 10.8%; aproxima 10%, no exactamente. AWS=10% exacto implica 21.6M.",
+    "it_savings_target_percent": "Dato del caso: meta CFO -15% sobre gasto TOTAL de TI, no solo AWS.",
+    "first_year_project_cost": "Oferta revisada en la Parte E del caso: USD 1.5M contratables con Escala en tres fases (520K + 620K + 360K); distribución estimada, no cotización.",
+    "working_days_per_year": "Supuesto de calendario para transformar ventas anuales en ventas por hora.",
+    "operating_hours_per_day": "Supuesto de 10 horas operativas por día; no implica que los sistemas funcionen solo ese horario.",
+    "revenue_exposed_to_order_system_percent": "Supuesto ilustrativo: 50% del flujo comercial se ve afectado por el sistema de pedidos; no verificado.",
+    "unrecoverable_revenue_during_outage_percent": "Supuesto ilustrativo: 50% de la venta afectada no se recupera posteriormente.",
+    "contribution_margin_on_lost_revenue_percent": "Supuesto ilustrativo: margen de contribución de 25%, no margen bruto de ingreso.",
+    "monthly_credit_applications": "Supuesto ilustrativo de 1,000 solicitudes/mes; se debe solicitar a la subsidiaria.",
+    "net_incremental_margin_per_extra_approved_credit": "Supuesto ilustrativo USD 800 por crédito incremental aprobado, neto de costos incrementales y riesgo crediticio; validar.",
+    "monthly_incremental_support_after_year_1": "USD 13,500/mes referenciales; se consideran ADICIONALES al gasto TI existente, salvo que reemplazen costos actuales.",
+    "monthly_incremental_cloud_cost": "0 solo por falta de información; el proyecto puede aumentar consumo/licencias. Analizar sensibilidad.",
+    "annual_discount_rate": "Supuesto del analista: tasa de descuento del 12% anual; validar con política CFO.",
+    "start_month_outage_improvements": "Supuesto de puesta en producción mes 4 después de estabilización meses 1-3.",
+    "start_month_aws_savings": "Supuesto de efectos FinOps a partir de mes 5.",
+    "start_month_credit_conversion": "Supuesto de beneficios de modernización de créditos a partir de mes 9.",
+    "phase_line_items": "Desglose revisado de USD 1.5M (520K/620K/360K) derivado del Excel de presupuesto: horas × tarifas supuestas, NO tarifas oficiales de Escala.",
+    "annual_scenarios": "10/15/20% AWS, 6/12/18 h evitadas y +2/+5/+8 puntos de conversión son escenarios ilustrativos, no promesas.",
+    "dc_guatemala": "24 racks×4kW, PUE1.65, electricidad industrial referencia Guatemala USD0.19/kWh (ACOGRACE 2025). Costos contratuales supuestos, no facturas reales. Colocation es alternativo, no ahorro reservado.",
+    "it_budget_categories": "Todas las otras categorías aparte de AWS son estimaciones para repartir 20M. No se pueden mezclar depreciación/ahorro de caja. Escenarios adicionales por validar y fuera del ROI oficial.",
+    "approved_modernization_budget": "Dato del caso: USD 1.8M aprobados para modernización; reserva comercial sujeta a reasignación y aprobación financiera.",
+    "commercial_reserve": "Reserva de USD 300K para iniciativas ABM/expansión en República Dominicana, NO contratada con Escala ni incluida en el ROI tecnológico por defecto.",
+    "benefit_realization_factor": "Análisis de sensibilidad: 100% preserva supuestos previos. La reducción de alcance a USD1.5M podría reducir beneficios, sin validación de ello."
+  },
+  "dc_guatemala": {
+    "racks": 24,
+    "it_kw_per_rack": 4,
+    "pue": 1.65,
+    "hours_per_year": 8760,
+    "electricity_usd_per_kwh": 0.19,
+    "annual_equipment_depreciation": 1100000,
+    "annual_oem_maintenance": 450000,
+    "annual_facility_equipment_maintenance": 266000,
+    "annual_space_security_insurance": 320000,
+    "rack_colo_guatemala_usd_month": 1100,
+    "half_rack_colo_cr_usd_month": 899,
+    "savings_rates": {
+      "Electricidad": {
+        "Conservador": 0.02,
+        "Base": 0.07,
+        "Alto": 0.12
+      },
+      "OEM soporte": {
+        "Conservador": 0.02,
+        "Base": 0.06,
+        "Alto": 0.1
+      },
+      "UPS HVAC generadores": {
+        "Conservador": 0.01,
+        "Base": 0.05,
+        "Alto": 0.1
+      },
+      "Local y seguridad física": {
+        "Conservador": 0,
+        "Base": 0,
+        "Alto": 0.03
+      },
+      "Depreciación (no caja)": {
+        "Conservador": 0,
+        "Base": 0,
+        "Alto": 0
+      }
+    },
+    "notes": "Supuesto de un DC principal Guatemala. No se presume 1 DC por país. No retirar hardware de amortización como ahorro de caja. El ahorro de colocation no se contabiliza.",
+    "sources": {
+      "gt_electricity": "https://acograce.com/",
+      "pue": "https://intelligence.uptimeinstitute.com/resource/uptime-institute-global-data-center-survey-2024",
+      "gt_colo": "https://www.tec.com.gt/itec",
+      "cr_colo": "https://navegalo.com/es/colocation/",
+      "operating_costs": "https://documents1.worldbank.org/curated/en/099052824071033398/pdf/P1730321d6e1a30f71ae7717923561a28a4.pdf"
+    }
+  },
+  "it_budget_categories": [
+    {
+      "name": "ERP, software y SaaS",
+      "annual_budget": 4400000,
+      "savings_pct": {
+        "Conservador": 0.005,
+        "Base": 0.02,
+        "Alto": 0.04
+      }
+    },
+    {
+      "name": "Personal TI y soporte regional",
+      "annual_budget": 1500000,
+      "savings_pct": {
+        "Conservador": 0,
+        "Base": 0,
+        "Alto": 0
+      }
+    },
+    {
+      "name": "Proveedores TI e integradores",
+      "annual_budget": 4000000,
+      "savings_pct": {
+        "Conservador": 0,
+        "Base": 0.01,
+        "Alto": 0.03
+      }
+    },
+    {
+      "name": "WAN, telecom regional",
+      "annual_budget": 1800000,
+      "savings_pct": {
+        "Conservador": 0.005,
+        "Base": 0.02,
+        "Alto": 0.04
+      }
+    },
+    {
+      "name": "Ciberseguridad y auditoria",
+      "annual_budget": 1100000,
+      "savings_pct": {
+        "Conservador": 0,
+        "Base": 0,
+        "Alto": 0
+      }
+    },
+    {
+      "name": "Dispositivos y soporte usuarios",
+      "annual_budget": 1640000,
+      "savings_pct": {
+        "Conservador": 0,
+        "Base": 0.01,
+        "Alto": 0.02
+      }
+    }
+  ],
+  "pre_discovery_opportunity": 664700,
+  "commercial_reserve_allocation": [
+    {
+      "program": "Producción de eventos B2B y encuentros estratégicos",
+      "amount": 80000,
+      "measurement": "Reuniones calificadas y pipeline atribuido"
+    },
+    {
+      "program": "Relaciones públicas, convocatoria y ponentes",
+      "amount": 50000,
+      "measurement": "Participación de cuentas objetivo y decisores"
+    },
+    {
+      "program": "Prospección y Account-Based Marketing (ABM)",
+      "amount": 70000,
+      "measurement": "Cuentas calificadas, tasa de respuesta y oportunidades"
+    },
+    {
+      "program": "Ventas locales y entrada operativa al mercado",
+      "amount": 100000,
+      "measurement": "Pilotos, propuestas y acuerdos evaluados"
+    }
+  ]
+}
