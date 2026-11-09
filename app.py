@@ -9,9 +9,113 @@ from it_costs import budget_and_savings
 from dimensioning_model import calculate_dimensioning
 
 st.set_page_config(page_title="Grupo Fénix | Modelos financieros", layout="wide", page_icon="📊")
+
+# Identidad visual extraída de la presentación ejecutiva de Grupo Fénix.
+# Los colores se mantienen aquí para que la app funcione incluso sin config.toml.
+FENIX = {
+    "forest": "#155440",  # Verde profundo: encabezados y llamadas a la acción
+    "teal": "#25957B",    # Verde teal: segunda fase / acentos
+    "aqua": "#6EC8BD",    # Turquesa claro: tercera fase
+    "mint": "#A1E1D9",    # Fondo de sección y tarjetas
+    "sage": "#AAD59D",    # Retención y expansión
+    "pale": "#E3F4F1",    # Filas y tablas suaves
+    "white": "#FFFFFE",   # Fondo de documento
+    "ink": "#193F36",     # Texto principal
+}
+
+st.markdown("""
+<style>
+/* Fondo y tipografía — equivalentes a las páginas del business case. */
+.stApp, [data-testid="stAppViewContainer"] { background: #FFFFFE; color: #193F36; }
+.block-container { max-width: 1280px; padding-top: 1.35rem; padding-bottom: 4rem; }
+html, body, [data-testid="stMarkdownContainer"], [data-testid="stAppViewContainer"] {
+    font-family: 'Aptos', 'Inter', 'Arial', sans-serif;
+}
+h1, h2, h3, [data-testid="stHeadingWithActionElements"] { color: #155440 !important; letter-spacing: -.025em; }
+h2 { border-bottom: 2px solid #A1E1D9; padding-bottom: .35rem; }
+a { color: #197C6D !important; }
+
+/* Portada compacta a juego con la presentación. */
+.fenix-header {
+    border-radius: 23px;
+    background: linear-gradient(112deg, #155440 0%, #216F60 63%, #3A9F94 100%);
+    padding: 27px 31px 24px;
+    color: #FFFFFF;
+    margin: 0 0 23px;
+    box-shadow: 0 6px 22px rgba(21,84,64,.11);
+    position: relative;
+    overflow: hidden;
+}
+.fenix-header::after {
+    content: ''; position:absolute; width:170px;height:170px;right:-54px;top:-80px;
+    border-radius:50%; border:31px solid rgba(161,225,217,.24);
+}
+.fenix-eyebrow {color:#D1F1E9;font-size:.77rem;font-weight:800;letter-spacing:.15em;margin:0 0 10px;}
+.fenix-title {color:#FFFFFF !important;font-size:2.12rem;line-height:1.14;font-weight:800;margin:0 0 9px;letter-spacing:-.035em;}
+.fenix-subtitle {color:#E4F7F1;font-size:.98rem;max-width:820px;line-height:1.48;margin:0;}
+.fenix-stripe {display:flex;gap:5px;margin-top:18px;width:min(620px,95%)}
+.fenix-stripe span {display:block;height:7px;border-radius:30px;flex:1;}
+.fenix-stripe span:nth-child(-n+2){background:#155440;border:1px solid #A1E1D9}
+.fenix-stripe span:nth-child(3){background:#25957B}
+.fenix-stripe span:nth-child(4){background:#6EC8BD}
+.fenix-stripe span:nth-child(5){background:#A1E1D9}
+.fenix-stripe span:nth-child(6){background:#AAD59D}
+.fenix-strip-note{font-size:.81rem;color:#D1F1E9;margin-top:10px;}
+
+/* Pestañas visualmente iguales a las etiquetas redondeadas de la oferta. */
+.stTabs [data-baseweb="tab-list"] { gap:10px; background:#E3F4F1; padding:7px; border-radius:17px; }
+.stTabs [data-baseweb="tab"] {
+    border-radius:12px; padding:10px 19px; color:#155440; font-weight:700;
+    background:transparent; border:0 !important;
+}
+.stTabs [aria-selected="true"] { background:#155440 !important; color:#FFFFFF !important; }
+.stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] {display:none !important;}
+
+/* Métricas estilo tarjeta ejecutiva. */
+[data-testid="stMetric"] {
+    background: #E3F4F1;
+    border: 1px solid #C5E8DF;
+    border-radius: 16px;
+    padding: 15px 17px;
+    min-height: 99px;
+}
+[data-testid="stMetricLabel"] { color: #397466; font-weight:650; }
+[data-testid="stMetricValue"] { color: #155440; font-weight:800; letter-spacing:-.035em; }
+
+/* Inputs, contenedores, tablas y avisos. */
+[data-testid="stExpander"] { border: 1px solid #CCEAE3 !important; border-radius:16px !important; background:#FAFEFC; }
+[data-testid="stVerticalBlockBorderWrapper"] > div[style*="border"] { border-color:#D5EBE5 !important; border-radius:15px !important; }
+[data-testid="stDataFrame"], [data-testid="stTable"] { border:1px solid #D5EBE5; border-radius:13px; overflow:hidden; }
+[data-testid="stAlert"] { border-radius:13px; border-left:4px solid #25957B; }
+[data-testid="stDownloadButton"] button, [data-testid="stButton"] button[kind="primary"] {
+    color:#FFFFFF !important; background:#155440 !important; border:1px solid #155440 !important;
+    border-radius:11px !important; font-weight:700;
+}
+[data-testid="stDownloadButton"] button:hover, [data-testid="stButton"] button[kind="primary"]:hover { background:#25957B !important; }
+[data-testid="stSelectbox"] > div, [data-testid="stNumberInput"] > div { border-radius:10px; }
+[data-testid="stCaptionContainer"] { color:#55736A; }
+[data-testid="stSlider"] [role="slider"] { box-shadow:0 0 0 2px #A1E1D9; }
+hr {border-color:#DBEEE9;}
+@media (max-width: 690px) {
+    .block-container {padding-top:.8rem;}
+    .fenix-header {padding:21px 20px;border-radius:17px;}
+    .fenix-title {font-size:1.56rem;}
+    .stTabs [data-baseweb="tab"] {padding:8px 10px;font-size:.86rem;}
+}
+</style>
+""", unsafe_allow_html=True)
+
 config = copy.deepcopy(load_config())
-st.title("Grupo Fénix — supuestos y escenarios financieros")
-st.caption("Modelo de análisis comercial, con supuestos explícitos. Los valores no constituyen una cotización oficial de Escala.")
+st.markdown("""
+<section class="fenix-header">
+  <div class="fenix-eyebrow">GRUPO FÉNIX · BUSINESS CASE AWS</div>
+  <div class="fenix-title">Supuestos y escenarios financieros</div>
+  <p class="fenix-subtitle">Del dimensionamiento preliminar a la inversión propuesta: explora los supuestos, compara escenarios y evalúa su impacto financiero.</p>
+  <div class="fenix-stripe"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="fenix-strip-note">Parte B · Dimensionamiento &nbsp;&nbsp; | &nbsp;&nbsp; Parte E · Oferta y retorno</div>
+</section>
+""", unsafe_allow_html=True)
+st.caption("Modelo comercial basado en supuestos editables. Valores referenciales; no constituyen cotización oficial de Escala.")
 tab_dim, tab_offer = st.tabs(["01 · Dimensionamiento preliminar", "02 · Supuestos de la oferta"])
 
 with tab_dim:
@@ -62,7 +166,7 @@ with tab_dim:
             "Ingeniería USD":"${:,.2f}", "Assessment USD":"${:,.2f}",
             "Soporte USD":"${:,.2f}", "Total USD":"${:,.2f}",
             "% presupuesto 1.8M":"{:.2%}"}), use_container_width=True)
-    st.bar_chart(dim_df[["Total USD"]])
+    st.bar_chart(dim_df[["Total USD"]], color=FENIX["teal"])
 
     st.subheader("Categorías de servicio según escenario")
     order = [line["category"] for line in dim["service_lines"]]
@@ -165,12 +269,12 @@ with tab_offer:
     st.dataframe(df.style.format({c:"${:,.0f}" for c in df.columns if c not in ["ROI 3 años", "Payback (meses)"]}).format({"ROI 3 años":"{:.2%}", "Payback (meses)":"{:.2f}"}), use_container_width=True)
 
     st.caption("Beneficios recuperados por créditos y caídas NO cuentan como ahorro del presupuesto TI. El soporte adicional sí reduce el ahorro neto de TI.")
-    st.bar_chart(df[["Beneficios acumulados 3 años", "TCO incremental 3 años"]])
+    st.bar_chart(df[["Beneficios acumulados 3 años", "TCO incremental 3 años"]], color=[FENIX["teal"], FENIX["mint"]])
 
     scenario_name = st.selectbox("Ver flujo mensual", list(result["scenarios"]), index=1)
     s = result["scenarios"][scenario_name]
     cf = pd.DataFrame(s["cashflows"][:36]).set_index("month")
-    st.line_chart(cf[["cumulative_net"]].rename(columns={"cumulative_net": "Flujo neto acumulado (USD)"}))
+    st.line_chart(cf[["cumulative_net"]].rename(columns={"cumulative_net": "Flujo neto acumulado (USD)"}), color=FENIX["forest"])
     with st.expander("Flujo de caja mensual detallado y descarga"):
         st.dataframe(cf.style.format("${:,.0f}"), use_container_width=True)
         st.download_button("Descargar flujo mensual CSV", cf.to_csv().encode("utf-8-sig"), file_name=f"flujo_fenix_{scenario_name.lower()}.csv", mime="text/csv")
