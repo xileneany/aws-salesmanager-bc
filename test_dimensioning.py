@@ -37,6 +37,25 @@ class DimensioningCases(unittest.TestCase):
         self.assertEqual(self.c['financial_inputs']['first_year_project_cost'],1500000)
         self.assertEqual(self.output['base']['total'],664700)
 
+    def test_shorter_period_reduces_engineering_and_support(self):
+        self.d['horizon_months'] = 6
+        actual = calculate_dimensioning(self.d, 1800000)
+        self.assertAlmostEqual(actual['base']['engineer_total'], 265600)
+        self.assertAlmostEqual(actual['base']['recurring'], 60750)
+        self.assertAlmostEqual(actual['base']['assessment'], 12000)
+        self.assertAlmostEqual(actual['base']['total'], 338350)
+
+    def test_one_month_and_all_scenarios(self):
+        self.d['horizon_months'] = 1
+        out = calculate_dimensioning(self.d, 1800000)
+        self.assertAlmostEqual(out['base']['total'], 12000 + 10125 + 531200/12)
+        self.assertTrue(out['scenarios']['Conservador']['total'] < out['base']['total'] < out['scenarios']['Alto']['total'])
+
+    def test_invalid_duration_rejected(self):
+        self.d['horizon_months'] = 0
+        with self.assertRaises(ValueError):
+            calculate_dimensioning(self.d, 1800000)
+
     def test_editable_inputs_recalculate(self):
         self.d['service_lines'][0]['hours'] += 10
         new = calculate_dimensioning(self.d, 1800000)['base']['total']
