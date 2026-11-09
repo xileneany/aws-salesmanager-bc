@@ -326,7 +326,7 @@ with tab_offer:
     st.subheader("Desglose del gasto TI total (hipótesis, USD/año)")
     bud = budget_result["budget"]
     show_financial_table(pd.DataFrame([{"Partida":n,"Anual (USD)":v,"% TI":v/shared["annual_it_spend"]} for n,v in bud.items()]).set_index("Partida"), currency=["Anual (USD)"], percentages=["% TI"])
-    st.caption("El caso confirma AWS y 40% de cargas on-prem en Guatemala; NO confirma contratos, racks ni distribución monetaria por partida. No asumir que 40% de cargas equivale a 40% del gasto.")
+    st.caption("El caso confirma AWS y 40% de cargas on-prem en Guatemala.")
 
     dc = budget_result["dc"]
     st.subheader("Costo orientativo del data center principal, Guatemala")
@@ -338,7 +338,7 @@ with tab_offer:
         ("Peso del DC en TI",f"{dc['annual_total']/shared['annual_it_spend']:.2%}")]):
         col.metric(label,val)
     show_financial_table(pd.DataFrame([{"Costo anual":k,"USD":v} for k,v in dc["cost_components"].items()]).set_index("Costo anual"), currency=["USD"])
-    st.caption("Referencia de energía Guatemala USD0.19/kWh (ACOGRACE 2025); PUE1.65 y 24 racks son hipótesis, no un inventario confirmado. Depreciación de USD1.1M/año NO es ahorro de caja inmediato.")
+    st.caption("Referencia de energía Guatemala USD0.19/kWh (ACOGRACE 2025); PUE1.65 y 24 racks son hipótesis, no un inventario confirmado.")
     with st.expander("Comparación informativa con colocation — NO equivale a ahorro"):
         st.write(f"Guatemala: 24 racks × USD1,100 × 12 = {fmt(dc['colo_gt_reference_usd_year'])}/año (iTec). Potencia y términos del contrato no equivalentes.")
         st.write(f"Costa Rica: capacidad equivalente a 2kW/medio-rack a USD899/mes = {fmt(dc['colo_cr_reference_usd_year'])}/año sin IVA (Navégalo). Excluye migración, interconexión y otras necesidades.")
