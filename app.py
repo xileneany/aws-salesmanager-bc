@@ -81,6 +81,8 @@ a { color: #197C6D !important; }
 }
 [data-testid="stMetricLabel"] { color: #397466; font-weight:650; }
 [data-testid="stMetricValue"] { color: #155440; font-weight:800; letter-spacing:-.035em; }
+[data-testid="stMetricValue"] { font-size: clamp(1.22rem, 1.75vw, 1.78rem) !important; line-height: 1.25 !important; }
+[data-testid="stMetric"] { min-width: 0; }
 
 /* Inputs, contenedores, tablas y avisos. */
 [data-testid="stExpander"] { border: 1px solid #CCEAE3 !important; border-radius:16px !important; background:#FAFEFC; }
@@ -104,6 +106,19 @@ hr {border-color:#DBEEE9;}
 }
 </style>
 """, unsafe_allow_html=True)
+
+# Tarjetas ejecutivas: abreviar miles/millones sin perder precisión en el modelo.
+def metric_usd(value):
+    amount = float(value)
+    sign = "-" if amount < 0 else ""
+    a = abs(amount)
+    if a >= 1_000_000:
+        number, suffix = a / 1_000_000, "M"
+    elif a >= 1_000:
+        number, suffix = a / 1_000, "K"
+    else:
+        number, suffix = a, ""
+    return f"USD {sign}{number:,.2f}".rstrip("0").rstrip(".") + suffix
 
 # Formato ejecutivo: solo cambia la visualización, nunca los cálculos ni los CSV.
 def show_financial_table(frame, currency=(), percentages=(), numbers=(), integers=(), hide_index=False):
@@ -175,9 +190,9 @@ with tab_dim:
     dimensioning = calculate_dimensioning(dim, float(config["financial_inputs"]["approved_modernization_budget"]))
     base = dimensioning["base"]
     p1, p2, p3 = st.columns(3)
-    p1.metric("Servicios de proyecto · base", f"USD {base['engineer_total'] + base['assessment']:,.2f}")
-    p2.metric("Servicios recurrentes · base", f"USD {base['recurring']:,.2f}")
-    p3.metric("Oportunidad total · base", f"USD {base['total']:,.2f}")
+    p1.metric("Servicios de proyecto · base", metric_usd(base['engineer_total'] + base['assessment']))
+    p2.metric("Servicios recurrentes · base", metric_usd(base['recurring']))
+    p3.metric("Oportunidad total · base", metric_usd(base['total']))
 
     st.subheader("Comparación de escenarios")
     dim_rows = []
@@ -278,7 +293,7 @@ with tab_offer:
         ("AWS anual", shared["annual_aws_spend"]),
         ("Contrato técnico Escala", shared["project_investment"]),
     ]):
-        col.metric(label, fmt(value))
+        col.metric(label, metric_usd(value), help=f"Importe exacto: {fmt(value)}")
 
     st.info(f"**Presupuesto aprobado:** {fmt(shared['approved_budget'])} = **servicios tecnológicos** {fmt(shared['project_investment'])} + **reserva comercial NO comprometida** {fmt(shared['commercial_reserve'])}. La reserva no es ingreso de Escala. Reasignarla a ABM exige autorización de Finanzas.")
     st.caption("Esta oferta posterior al descubrimiento es distinta del dimensionamiento preliminar mostrado en la primera pestaña. No deben sumarse como contratos independientes.")
@@ -320,8 +335,8 @@ with tab_offer:
     cols = st.columns(4)
     for col,(label,val) in zip(cols,[
         ("Carga IT",f"{dc['it_kw']:,.2f} kW"),
-        ("Electricidad anual",fmt(dc["electricity_usd"])),
-        ("Operación DC anual, incl. depreciación",fmt(dc["annual_total"])),
+        ("Electricidad anual",metric_usd(dc["electricity_usd"])),
+        ("Operación DC anual, incl. depreciación",metric_usd(dc["annual_total"])),
         ("Peso del DC en TI",f"{dc['annual_total']/shared['annual_it_spend']:.2%}")]):
         col.metric(label,val)
     show_financial_table(pd.DataFrame([{"Costo anual":k,"USD":v} for k,v in dc["cost_components"].items()]).set_index("Costo anual"), currency=["USD"])
