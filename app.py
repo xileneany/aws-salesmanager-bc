@@ -163,14 +163,22 @@ tab_dim, tab_offer = st.tabs(["01 · Dimensionamiento preliminar", "02 · Supues
 
 with tab_dim:
     st.header("Parte B · Dimensionamiento de la oportunidad")
-    st.write("Estimación de servicios Escala durante 12 meses, **antes del descubrimiento técnico**. El escenario base corresponde al análisis presentado: USD 664,700.")
+    st.write("**Horizonte del proyecto: 12 meses.** Por defecto, las actividades de evaluación e ingeniería se dimensionan dentro de ese período y el soporte administrado comienza en el mes 4 (9 mensualidades). El total inicial coincide con la Parte B: USD 664,700.")
     dim = config["dimensioning"]
+    horizon_months = 12
     with st.expander("Editar supuestos de dimensionamiento", expanded=False):
         c1, c2, c3 = st.columns(3)
         with c1:
             dim["assessment_usd"] = st.number_input("Assessment inicial (USD)", min_value=0.0, max_value=1000000.0, value=float(dim["assessment_usd"]), step=500.0, format="%.2f", key="dim_assess")
         with c2:
-            dim["managed_months"] = st.number_input("Meses de soporte", min_value=0, max_value=36, value=int(dim["managed_months"]), step=1, key="dim_months")
+            default_support_start = max(1, min(horizon_months + 1, horizon_months - int(dim["managed_months"]) + 1))
+            support_start = st.number_input(
+                "Mes de inicio del soporte (en 12 meses)",
+                min_value=1, max_value=horizon_months + 1,
+                value=default_support_start, step=1, key="dim_support_start",
+                help="Mes 4 = soporte durante los meses 4–12 (9 mensualidades). Mes 1 = soporte durante los 12 meses, con un precio superior. Mes 13 = sin soporte en el año.",
+            )
+            dim["managed_months"] = max(0, horizon_months - int(support_start) + 1)
         with c3:
             dim["managed_monthly_usd"] = st.number_input("Soporte mensual (USD)", min_value=0.0, max_value=250000.0, value=float(dim["managed_monthly_usd"]), step=250.0, format="%.2f", key="dim_support")
         st.markdown("**Esfuerzo y tarifas por línea de servicio**")
@@ -187,6 +195,10 @@ with tab_dim:
             with col:
                 dim["multipliers"][name] = st.number_input(f"Factor {name}", min_value=0.0, max_value=3.0, value=float(factor), step=0.05, format="%.2f", key=f"dim_factor_{name}")
 
+    if dim["managed_months"]:
+        st.caption(f"**Plazo de estimación:** 12 meses | **Soporte facturado:** meses {support_start}–12 ({dim['managed_months']} meses) | **Evaluación y preparación inicial:** meses 1–3 en el escenario original.")
+    else:
+        st.caption("**Plazo de estimación:** 12 meses | **Soporte facturado:** ninguno durante el período.")
     dimensioning = calculate_dimensioning(dim, float(config["financial_inputs"]["approved_modernization_budget"]))
     base = dimensioning["base"]
     p1, p2, p3 = st.columns(3)
@@ -224,9 +236,9 @@ with tab_dim:
     st.dataframe(detailed.style.format({"Horas base":"{:,.0f}",
         "Horas ajustadas":"{:,.2f}","Tarifa USD/h":"${:,.2f}","Total USD":"${:,.2f}"}),
         use_container_width=True, hide_index=True)
-    st.caption(f"A los honorarios de ingeniería se suman el assessment único de USD {dim['assessment_usd']:,.2f} y el soporte de {dim['managed_months']} meses × USD {dim['managed_monthly_usd']:,.2f}. Los multiplicadores alteran horas de ingeniería, no los cargos fijos.")
+    st.caption(f"Cálculo anual: ingeniería durante el proyecto de 12 meses + assessment único de USD {dim['assessment_usd']:,.2f} + soporte de {dim['managed_months']} meses × USD {dim['managed_monthly_usd']:,.2f}. Cambiar el inicio del soporte modifica el alcance y el precio, no la duración de la estimación. Los multiplicadores afectan únicamente las horas de ingeniería.")
+    st.caption("La Parte B estima honorarios de servicios, no consumo AWS. Esta oportunidad preliminar es distinta de la oferta de la Parte E y no se suma a ella.")
     with st.expander("Referencia de servicios AWS y archivos del dimensionamiento"):
-        st.write("El Excel original estima además cargos AWS ilustrativos por **USD 11,620.80 al año** (KMS, CloudWatch, AWS Backup, Glue, QuickSight y CodePipeline). Son gastos AWS potenciales separados, no ingresos de Escala.")
         original = Path(__file__).parent / "data" / "excel_originales" / "Grupo_Fenix_Dimensionamiento_12M_Con_Recursos.xlsx"
         if original.exists():
             st.download_button("Descargar Excel original de dimensionamiento", original.read_bytes(), file_name=original.name, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dim_excel")
@@ -294,7 +306,8 @@ with tab_offer:
     ]):
         col.metric(label, metric_usd(value), help=f"Importe exacto: {fmt(value)}")
 
-    st.info(f"**Presupuesto aprobado:** {fmt(shared['approved_budget'])} = **servicios tecnológicos** {fmt(shared['project_investment'])} + **reserva comercial** {fmt(shared['commercial_reserve'])}.")
+    st.caption(f"Presupuesto de referencia: {fmt(shared['approved_budget'])} = servicios tecnológicos {fmt(shared['project_investment'])} + reserva comercial {fmt(shared['commercial_reserve'])}.")
+    st.caption("Esta oferta posterior al descubrimiento es distinta del dimensionamiento preliminar mostrado en la primera pestaña. No deben sumarse como contratos independientes.")
     st.subheader("Comparación de escenarios — tres años")
     rows = []
     for name, s in result["scenarios"].items():
@@ -326,7 +339,7 @@ with tab_offer:
     st.subheader("Desglose del gasto TI total (hipótesis, USD/año)")
     bud = budget_result["budget"]
     show_financial_table(pd.DataFrame([{"Partida":n,"Anual (USD)":v,"% TI":v/shared["annual_it_spend"]} for n,v in bud.items()]).set_index("Partida"), currency=["Anual (USD)"], percentages=["% TI"])
-    st.caption("El caso confirma AWS y 40% de cargas on-prem en Guatemala.")
+    st.caption("El caso confirma AWS y 40% de cargas on-prem en Guatemala; NO confirma contratos, racks ni distribución monetaria por partida. No asumir que 40% de cargas equivale a 40% del gasto.")
 
     dc = budget_result["dc"]
     st.subheader("Costo orientativo del data center principal, Guatemala")
@@ -338,7 +351,7 @@ with tab_offer:
         ("Peso del DC en TI",f"{dc['annual_total']/shared['annual_it_spend']:.2%}")]):
         col.metric(label,val)
     show_financial_table(pd.DataFrame([{"Costo anual":k,"USD":v} for k,v in dc["cost_components"].items()]).set_index("Costo anual"), currency=["USD"])
-    st.caption("Referencia de energía Guatemala USD0.19/kWh (ACOGRACE 2025); PUE1.65 y 24 racks son hipótesis, no un inventario confirmado.")
+    st.caption("Referencia de energía Guatemala USD0.19/kWh (ACOGRACE 2025); PUE1.65 y 24 racks son hipótesis, no un inventario confirmado. Depreciación de USD1.1M/año NO es ahorro de caja inmediato.")
     with st.expander("Comparación informativa con colocation — NO equivale a ahorro"):
         st.write(f"Guatemala: 24 racks × USD1,100 × 12 = {fmt(dc['colo_gt_reference_usd_year'])}/año (iTec). Potencia y términos del contrato no equivalentes.")
         st.write(f"Costa Rica: capacidad equivalente a 2kW/medio-rack a USD899/mes = {fmt(dc['colo_cr_reference_usd_year'])}/año sin IVA (Navégalo). Excluye migración, interconexión y otras necesidades.")
