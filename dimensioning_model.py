@@ -4,10 +4,13 @@ from collections import defaultdict
 
 
 def calculate_dimensioning(dimensioning: dict, approved_budget: float) -> dict:
-    """Multiplica solo el esfuerzo de ingeniería. Assessment y soporte son fijos."""
+    """Prorratea las horas por plazo contratado; assessment único y soporte mensual."""
     assessment = float(dimensioning['assessment_usd'])
     monthly = float(dimensioning['managed_monthly_usd'])
-    months = int(dimensioning['managed_months'])
+    months = int(dimensioning.get('horizon_months', dimensioning['managed_months']))
+    if not 1 <= months <= 12:
+        raise ValueError('El plazo del dimensionamiento debe estar entre 1 y 12 meses.')
+    period_factor = months / 12.0
     items = dimensioning['service_lines']
     # Fixed lines have been assigned explicitly by the original workbook.
     def breakdown(factor: float):
@@ -17,7 +20,7 @@ def calculate_dimensioning(dimensioning: dict, approved_budget: float) -> dict:
         for line in items:
             hours = int(line['hours'])
             rate = float(line['hourly_rate_usd'])
-            adjusted_hours = hours * factor
+            adjusted_hours = hours * factor * period_factor
             cost = adjusted_hours * rate
             engineer_total += cost
             categories[line['category']] += cost
@@ -32,6 +35,7 @@ def calculate_dimensioning(dimensioning: dict, approved_budget: float) -> dict:
         return {'total':total, 'engineer_total': engineer_total,
                 'assessment':assessment, 'recurring': monthly * months,
                 'percentage_budget':total / approved_budget if approved_budget else 0.0,
+                'horizon_months': months,
                 'by_category':dict(categories), 'records':records}
     scenarios = {
         name: breakdown(float(multiplier))

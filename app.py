@@ -163,20 +163,19 @@ tab_dim, tab_offer = st.tabs(["01 · Dimensionamiento preliminar", "02 · Supues
 
 with tab_dim:
     st.header("Parte B · Dimensionamiento de la oportunidad")
-    st.write("**Horizonte de estimación: 12 meses, con soporte desde el mes 1.** El escenario base de USD 664,700 incorpora 12 meses de soporte a USD 10,125 mensuales, más ingeniería y assessment. La tarifa es una hipótesis comercial revisada, no una cotización de Escala.")
+    st.write("**Plazo de estimación editable: de 1 a 12 meses.** El escenario base corresponde a 12 meses y USD 664,700. Reducir el plazo supone contratar proporcionalmente menos horas de ingeniería y meses de soporte; el assessment se mantiene como costo único.")
     dim = config["dimensioning"]
-    horizon_months = 12
+    horizon_months = st.slider("Plazo de la oportunidad (meses)", min_value=1, max_value=12,
+        value=int(dim.get("horizon_months", 12)), step=1, key="dim_horizon",
+        help="12 meses = base entregada (USD 664,700). Menos meses reduce proporcionalmente el alcance estimado de ingeniería y el soporte, no el costo único del assessment.")
+    dim["horizon_months"] = horizon_months
+    dim["managed_months"] = horizon_months  # soporte desde el mes 1 hasta fin del plazo seleccionado
     with st.expander("Editar supuestos de dimensionamiento", expanded=False):
         c1, c2, c3 = st.columns(3)
         with c1:
             dim["assessment_usd"] = st.number_input("Assessment inicial (USD)", min_value=0.0, max_value=1000000.0, value=float(dim["assessment_usd"]), step=500.0, format="%.2f", key="dim_assess")
         with c2:
-            dim["managed_months"] = st.number_input(
-                "Meses de soporte, desde el mes 1",
-                min_value=1, max_value=horizon_months,
-                value=int(dim["managed_months"]), step=1, key="dim_support_months",
-                help="Por defecto 12 meses: soporte del mes 1 al mes 12. Modificar este plazo cambia el importe, no el horizonte de estimación.",
-            )
+            st.metric("Meses de soporte (desde mes 1)", horizon_months)
         with c3:
             dim["managed_monthly_usd"] = st.number_input("Soporte mensual (USD)", min_value=0.0, max_value=250000.0, value=float(dim["managed_monthly_usd"]), step=250.0, format="%.2f", key="dim_support")
         st.markdown("**Esfuerzo y tarifas por línea de servicio**")
@@ -193,7 +192,7 @@ with tab_dim:
             with col:
                 dim["multipliers"][name] = st.number_input(f"Factor {name}", min_value=0.0, max_value=3.0, value=float(factor), step=0.05, format="%.2f", key=f"dim_factor_{name}")
 
-    st.caption(f"**Plazo de estimación:** 12 meses | **Soporte mensual:** desde el mes 1 hasta el mes {dim['managed_months']} ({dim['managed_months']} mensualidades) | **Evaluación, remediación y soporte:** pueden realizarse en paralelo.")
+    st.caption(f"**Plazo seleccionado:** {horizon_months} de 12 meses | **Alcance de ingeniería:** {horizon_months}/12 del esfuerzo base (antes del factor de escenario) | **Soporte:** {horizon_months} mensualidades desde el mes 1 | **Assessment:** un pago único.")
     dimensioning = calculate_dimensioning(dim, float(config["financial_inputs"]["approved_modernization_budget"]))
     base = dimensioning["base"]
     p1, p2, p3 = st.columns(3)
@@ -226,12 +225,12 @@ with tab_dim:
     cat_df = pd.DataFrame(cat_rows).set_index("Categoría")
     st.dataframe(cat_df.style.format("${:,.2f}"),use_container_width=True)
 
-    st.subheader("Desglose del escenario base")
+    st.subheader(f"Desglose del escenario base · {horizon_months} meses")
     detailed = pd.DataFrame(base["records"])
     st.dataframe(detailed.style.format({"Horas base":"{:,.0f}",
         "Horas ajustadas":"{:,.2f}","Tarifa USD/h":"${:,.2f}","Total USD":"${:,.2f}"}),
         use_container_width=True, hide_index=True)
-    st.caption(f"Cálculo: ingeniería + assessment único de USD {dim['assessment_usd']:,.2f} + {dim['managed_months']} mensualidades de soporte × USD {dim['managed_monthly_usd']:,.2f}. Para conservar USD 664,700 con 12 meses se ajustó la tarifa supuesta a USD 10,125/mes; NO es una cotización de Escala. Los multiplicadores afectan únicamente las horas de ingeniería.")
+    st.caption(f"Cálculo: horas de ingeniería × tarifa × ({horizon_months}/12) × factor de escenario + assessment único de USD {dim['assessment_usd']:,.2f} + {horizon_months} mensualidades × USD {dim['managed_monthly_usd']:,.2f}. Menos meses significa menos alcance, no ejecución acelerada del mismo proyecto. Tarifas referenciales, no oficiales de Escala.")
     st.caption("La Parte B estima honorarios de servicios, no consumo AWS. Esta oportunidad preliminar es distinta de la oferta de la Parte E y no se suma a ella.")
     with st.expander("Referencia de servicios AWS y archivos del dimensionamiento"):
         original = Path(__file__).parent / "data" / "excel_originales" / "Grupo_Fenix_Dimensionamiento_12M_Con_Recursos.xlsx"

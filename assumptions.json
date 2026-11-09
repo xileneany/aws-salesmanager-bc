@@ -366,7 +366,7 @@
     }
   ],
   "dimensioning": {
-    "description": "Oportunidad preliminar Parte B: USD 664,700 en 12 meses, soporte desde el mes 1. Supuesto revisado; no cotización Escala.",
+    "description": "Parte B: escenario base USD 664,700 por 12 meses; escenario de plazo editable 1–12 meses, soporte del mes 1 al mes elegido.",
     "assessment_usd": 12000,
     "managed_months": 12,
     "managed_monthly_usd": 10125,
@@ -414,6 +414,7 @@
       }
     ],
     "source": "Grupo_Fenix_Dimensionamiento_12M_Con_Recursos.xlsx (revisión 12 mensualidades); caso entregado por el usuario.",
-    "interpretation": "Engineering × factor; assessment USD 12,000 y soporte 12 × USD 10,125 constantes. La nueva mensualidad sustituye la referencia anterior de 9 × USD 13,500 para conservar USD 121,500 de soporte en 12 meses."
+    "interpretation": "Las horas de ingeniería se ajustan proporcionalmente al plazo seleccionado (meses/12) y al factor de escenario; assessment USD 12,000 único, soporte USD 10,125 por cada mes seleccionado desde el mes 1. La reducción de plazo supone MENOR ALCANCE, no igual trabajo en menos tiempo.",
+    "horizon_months": 12
   }
 }
