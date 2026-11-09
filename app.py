@@ -105,6 +105,34 @@ hr {border-color:#DBEEE9;}
 </style>
 """, unsafe_allow_html=True)
 
+# Formato ejecutivo: solo cambia la visualización, nunca los cálculos ni los CSV.
+def show_financial_table(frame, currency=(), percentages=(), numbers=(), integers=(), hide_index=False):
+    """Forzar como texto el formato visible (Streamlit puede ignorar Styler.format)."""
+    out = frame.copy()
+    spec = {**{c: "currency" for c in currency},
+            **{c: "percentage" for c in percentages},
+            **{c: "number" for c in numbers},
+            **{c: "integer" for c in integers}}
+
+    def display(value, kind):
+        if value is None or pd.isna(value):
+            return "—"
+        val = float(value)
+        if kind == "currency":
+            return f"USD {val:,.2f}"
+        if kind == "percentage":
+            return f"{val * 100:,.2f}%"
+        if kind == "integer":
+            return f"{val:,.0f}"
+        return f"{val:,.2f}"
+
+    for col in out.columns:
+        if col in spec:
+            out[col] = out[col].map(lambda v, k=spec[col]: display(v, k))
+        elif pd.api.types.is_float_dtype(out[col]):
+            out[col] = out[col].map(lambda v: display(v, "number"))
+    st.dataframe(out, use_container_width=True, hide_index=hide_index)
+
 config = copy.deepcopy(load_config())
 st.markdown("""
 <section class="fenix-header">
@@ -213,9 +241,9 @@ with tab_offer:
         with st.container(border=True):
             d = config["dc_guatemala"]
             d["racks"] = st.number_input("Racks equivalentes", 1, 250, int(d["racks"]))
-            d["it_kw_per_rack"] = st.number_input("Potencia IT promedio (kW/rack)", 0.5, 30.0, float(d["it_kw_per_rack"]), .5)
-            d["pue"] = st.number_input("PUE medido/hipotético", 1.0, 3.0, float(d["pue"]), .05)
-            d["electricity_usd_per_kwh"] = st.number_input("Tarifa eléctrica (USD/kWh)", 0.01, 1.0, float(d["electricity_usd_per_kwh"]), .01)
+            d["it_kw_per_rack"] = st.number_input("Potencia IT promedio (kW/rack)", 0.5, 30.0, float(d["it_kw_per_rack"]), .5, format="%.2f")
+            d["pue"] = st.number_input("PUE medido/hipotético", 1.0, 3.0, float(d["pue"]), .05, format="%.2f")
+            d["electricity_usd_per_kwh"] = st.number_input("Tarifa eléctrica (USD/kWh)", 0.01, 1.0, float(d["electricity_usd_per_kwh"]), .01, format="%.2f")
             for field, label in [
                 ("annual_equipment_depreciation", "Depreciación de equipos USD/año"),
                 ("annual_oem_maintenance", "Mantenimiento OEM USD/año"),
@@ -242,7 +270,7 @@ with tab_offer:
     except ValueError as e:
         st.error(str(e)); st.stop()
     shared = result["shared"]
-    fmt = lambda x: f"${x:,.0f}"
+    fmt = lambda x: f"USD {x:,.2f}"
     columns = st.columns(4)
     for col, (label, value) in zip(columns, [
         ("Gasto TI actual anual", shared["annual_it_spend"]),
@@ -266,35 +294,37 @@ with tab_offer:
            "Ahorro neto TI anual estabilizado":s["steady_net_it_savings"],
            "Brecha a meta 15% TI":s["remaining_it_target_gap"]})
     df = pd.DataFrame(rows).set_index("Escenario")
-    st.dataframe(df.style.format({c:"${:,.0f}" for c in df.columns if c not in ["ROI 3 años", "Payback (meses)"]}).format({"ROI 3 años":"{:.2%}", "Payback (meses)":"{:.2f}"}), use_container_width=True)
+    show_financial_table(df,
+        currency=[c for c in df.columns if c not in ["ROI 3 años", "Payback (meses)" ]],
+        percentages=["ROI 3 años"], numbers=["Payback (meses)"])
 
     st.caption("Beneficios recuperados por créditos y caídas NO cuentan como ahorro del presupuesto TI. El soporte adicional sí reduce el ahorro neto de TI.")
-    st.bar_chart(df[["Beneficios acumulados 3 años", "TCO incremental 3 años"]], color=[FENIX["teal"], FENIX["mint"]])
+    st.bar_chart(df[["Beneficios acumulados 3 años", "TCO incremental 3 años"]].round(2), color=[FENIX["teal"], FENIX["mint"]])
 
     scenario_name = st.selectbox("Ver flujo mensual", list(result["scenarios"]), index=1)
     s = result["scenarios"][scenario_name]
     cf = pd.DataFrame(s["cashflows"][:36]).set_index("month")
-    st.line_chart(cf[["cumulative_net"]].rename(columns={"cumulative_net": "Flujo neto acumulado (USD)"}), color=FENIX["forest"])
+    st.line_chart(cf[["cumulative_net"]].round(2).rename(columns={"cumulative_net": "Flujo neto acumulado (USD)"}), color=FENIX["forest"])
     with st.expander("Flujo de caja mensual detallado y descarga"):
-        st.dataframe(cf.style.format("${:,.0f}"), use_container_width=True)
+        show_financial_table(cf, currency=cf.columns)
         st.download_button("Descargar flujo mensual CSV", cf.to_csv().encode("utf-8-sig"), file_name=f"flujo_fenix_{scenario_name.lower()}.csv", mime="text/csv")
 
 
     st.subheader("Desglose del gasto TI total (hipótesis, USD/año)")
     bud = budget_result["budget"]
-    st.dataframe(pd.DataFrame([{"Partida":n,"Anual (USD)":v,"% TI":v/shared["annual_it_spend"]} for n,v in bud.items()]).set_index("Partida").style.format({"Anual (USD)":"${:,.0f}","% TI":"{:.2%}"}),use_container_width=True)
+    show_financial_table(pd.DataFrame([{"Partida":n,"Anual (USD)":v,"% TI":v/shared["annual_it_spend"]} for n,v in bud.items()]).set_index("Partida"), currency=["Anual (USD)"], percentages=["% TI"])
     st.caption("El caso confirma AWS y 40% de cargas on-prem en Guatemala; NO confirma contratos, racks ni distribución monetaria por partida. No asumir que 40% de cargas equivale a 40% del gasto.")
 
     dc = budget_result["dc"]
     st.subheader("Costo orientativo del data center principal, Guatemala")
     cols = st.columns(4)
     for col,(label,val) in zip(cols,[
-        ("Carga IT",f"{dc['it_kw']:,.0f} kW"),
+        ("Carga IT",f"{dc['it_kw']:,.2f} kW"),
         ("Electricidad anual",fmt(dc["electricity_usd"])),
         ("Operación DC anual, incl. depreciación",fmt(dc["annual_total"])),
         ("Peso del DC en TI",f"{dc['annual_total']/shared['annual_it_spend']:.2%}")]):
         col.metric(label,val)
-    st.dataframe(pd.DataFrame([{"Costo anual":k,"USD":v} for k,v in dc["cost_components"].items()]).set_index("Costo anual").style.format("${:,.0f}"),use_container_width=True)
+    show_financial_table(pd.DataFrame([{"Costo anual":k,"USD":v} for k,v in dc["cost_components"].items()]).set_index("Costo anual"), currency=["USD"])
     st.caption("Referencia de energía Guatemala USD0.19/kWh (ACOGRACE 2025); PUE1.65 y 24 racks son hipótesis, no un inventario confirmado. Depreciación de USD1.1M/año NO es ahorro de caja inmediato.")
     with st.expander("Comparación informativa con colocation — NO equivale a ahorro"):
         st.write(f"Guatemala: 24 racks × USD1,100 × 12 = {fmt(dc['colo_gt_reference_usd_year'])}/año (iTec). Potencia y términos del contrato no equivalentes.")
@@ -309,18 +339,18 @@ with tab_offer:
             "Ahorro TI neto potencial":outcome["net_usd"],"Brecha meta CFO":outcome["gap_usd"],
             "% meta cubierta":outcome["target_coverage_pct"]})
     extra_df=pd.DataFrame(extra).set_index("Escenario")
-    st.dataframe(extra_df.style.format({c:"${:,.0f}" for c in extra_df.columns if c!="% meta cubierta"}).format({"% meta cubierta":"{:.2%}"}),use_container_width=True)
+    show_financial_table(extra_df, currency=[c for c in extra_df.columns if c != "% meta cubierta"], percentages=["% meta cubierta"])
     st.warning("NO sumar los ahorros de otros contratos al ROI de Escala sin validación de viabilidad, alcance contractual, costo de implementación y fecha de captura. El ahorro en personal y depreciación se deja en 0 por prudencia. La meta del 15% del gasto TI NO está demostrada.")
 
     st.subheader("Desglose de las tres fases (horas × tarifa)")
     line_items, totals = phase_pricing(config)
     price_df = pd.DataFrame(line_items)
     price_df = price_df.rename(columns={"phase":"Fase", "months":"Meses", "workstream":"Entregable/actividad", "role":"Perfil", "hours":"Horas", "hourly_rate":"USD/h", "cost":"USD"})
-    st.dataframe(price_df.style.format({"USD/h":"${:,.0f}", "USD":"${:,.0f}"}), use_container_width=True)
+    show_financial_table(price_df, currency=["USD/h", "USD"], integers=["Horas"])
     st.caption("El contrato técnico de USD 1.5M corresponde a 520K + 620K + 360K. Horas y tarifas son hipótesis de reparto, no precios oficiales ni cotizaciones de Escala.")
     st.subheader("Reserva comercial propuesta — República Dominicana")
     abm = pd.DataFrame(config["commercial_reserve_allocation"])
-    st.dataframe(abm.rename(columns={"program":"Iniciativa", "amount":"USD", "measurement":"Cómo medir"}).style.format({"USD":"${:,.0f}"}), use_container_width=True, hide_index=True)
+    show_financial_table(abm.rename(columns={"program":"Iniciativa", "amount":"USD", "measurement":"Cómo medir"}), currency=["USD"], hide_index=True)
     st.caption("USD 80K producción, 50K PR, 70K ABM y 100K ventas locales (versión final). El Excel histórico tiene otra distribución de USD 300K; no se suman. Ningún ingreso ni ROI de estos eventos está confirmado. Su uso requiere aprobación de Finanzas.")
     st.subheader("Archivos Excel originales y trazabilidad")
     st.caption("Estos archivos están incluidos en el repositorio como referencias documentales. Los controles de esta app usan assumptions.json; cambiar un Excel no actualiza por sí solo el modelo interactivo.")
