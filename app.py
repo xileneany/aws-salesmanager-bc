@@ -302,7 +302,7 @@ with tab_offer:
         col.metric(label, metric_usd(value), help=f"Importe exacto: {fmt(value)}")
 
     st.caption(f"Presupuesto de referencia: {fmt(shared['approved_budget'])} = servicios tecnológicos {fmt(shared['project_investment'])} + reserva comercial {fmt(shared['commercial_reserve'])}.")
-    st.caption("Esta oferta posterior al descubrimiento es distinta del dimensionamiento preliminar mostrado en la primera pestaña. No deben sumarse como contratos independientes.")
+    st.caption("Esta oferta posterior al descubrimiento es distinta del dimensionamiento preliminar mostrado en la primera pestaña.")
     st.subheader("Comparación de escenarios — tres años")
     rows = []
     for name, s in result["scenarios"].items():
@@ -319,7 +319,6 @@ with tab_offer:
         currency=[c for c in df.columns if c not in ["ROI 3 años", "Payback (meses)" ]],
         percentages=["ROI 3 años"], numbers=["Payback (meses)"])
 
-    st.caption("Beneficios recuperados por créditos y caídas NO cuentan como ahorro del presupuesto TI. El soporte adicional sí reduce el ahorro neto de TI.")
     st.bar_chart(df[["Beneficios acumulados 3 años", "TCO incremental 3 años"]].round(2), color=[FENIX["teal"], FENIX["mint"]])
 
     scenario_name = st.selectbox("Ver flujo mensual", list(result["scenarios"]), index=1)
@@ -346,8 +345,8 @@ with tab_offer:
         ("Peso del DC en TI",f"{dc['annual_total']/shared['annual_it_spend']:.2%}")]):
         col.metric(label,val)
     show_financial_table(pd.DataFrame([{"Costo anual":k,"USD":v} for k,v in dc["cost_components"].items()]).set_index("Costo anual"), currency=["USD"])
-    st.caption("Referencia de energía Guatemala USD0.19/kWh (ACOGRACE 2025); PUE1.65 y 24 racks son hipótesis, no un inventario confirmado. Depreciación de USD1.1M/año NO es ahorro de caja inmediato.")
-    with st.expander("Comparación informativa con colocation — NO equivale a ahorro"):
+    st.caption("Referencia de energía Guatemala USD0.19/kWh (ACOGRACE 2025); PUE1.65 y 24 racks son hipótesis.")
+    with st.expander("Comparación informativa con colocation"):
         st.write(f"Guatemala: 24 racks × USD1,100 × 12 = {fmt(dc['colo_gt_reference_usd_year'])}/año (iTec). Potencia y términos del contrato no equivalentes.")
         st.write(f"Costa Rica: capacidad equivalente a 2kW/medio-rack a USD899/mes = {fmt(dc['colo_cr_reference_usd_year'])}/año sin IVA (Navégalo). Excluye migración, interconexión y otras necesidades.")
 
@@ -368,12 +367,10 @@ with tab_offer:
     price_df = price_df.rename(columns={"phase":"Fase", "months":"Meses", "workstream":"Entregable/actividad", "role":"Perfil", "hours":"Horas", "hourly_rate":"USD/h", "cost":"USD"})
     show_financial_table(price_df, currency=["USD/h", "USD"], integers=["Horas"])
     st.caption("El contrato técnico de USD 1.5M corresponde a 520K + 620K + 360K. Horas y tarifas son hipótesis de reparto, no precios oficiales ni cotizaciones de Escala.")
-    st.subheader("Reserva comercial propuesta — República Dominicana")
+    st.subheader("Reserva comercial propuesta para República Dominicana")
     abm = pd.DataFrame(config["commercial_reserve_allocation"])
     show_financial_table(abm.rename(columns={"program":"Iniciativa", "amount":"USD", "measurement":"Cómo medir"}), currency=["USD"], hide_index=True)
-    st.caption("USD 80K producción, 50K PR, 70K ABM y 100K ventas locales (versión final). El Excel histórico tiene otra distribución de USD 300K; no se suman. Ningún ingreso ni ROI de estos eventos está confirmado. Su uso requiere aprobación de Finanzas.")
     st.subheader("Archivos Excel originales y trazabilidad")
-    st.caption("Estos archivos están incluidos en el repositorio como referencias documentales. Los controles de esta app usan assumptions.json; cambiar un Excel no actualiza por sí solo el modelo interactivo.")
     from pathlib import Path
     for label, filename in [
         ("Modelo CFO TI USD 20M y data center", "Fenix_Modelo_Financiero_CFO_20M_DC_Regional.xlsx"),
