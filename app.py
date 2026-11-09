@@ -163,11 +163,11 @@ tab_dim, tab_offer = st.tabs(["01 · Dimensionamiento preliminar", "02 · Supues
 
 with tab_dim:
     st.header("Parte B · Dimensionamiento de la oportunidad")
-    st.write("**Plazo de estimación editable: de 1 a 12 meses.** El escenario base corresponde a 12 meses y USD 664,700. Reducir el plazo supone contratar proporcionalmente menos horas de ingeniería y meses de soporte; el assessment se mantiene como costo único.")
+    st.write("**Plazo editable: de 1 a 24 meses.** El escenario base de 12 meses mantiene USD 664,700. Hasta el mes 12, la ingeniería se ajusta al alcance contratado; del mes 13 al 24, la implementación inicial permanece fija y solo se añade soporte mensual. El assessment se cobra una vez.")
     dim = config["dimensioning"]
-    horizon_months = st.slider("Plazo de la oportunidad (meses)", min_value=1, max_value=12,
+    horizon_months = st.slider("Plazo de la oportunidad (meses)", min_value=1, max_value=24,
         value=int(dim.get("horizon_months", 12)), step=1, key="dim_horizon",
-        help="12 meses = base entregada (USD 664,700). Menos meses reduce proporcionalmente el alcance estimado de ingeniería y el soporte, no el costo único del assessment.")
+        help="12 meses = base entregada (USD 664,700). Entre 1 y 11 meses se reduce ingeniería y soporte; entre 13 y 24 meses solo crece el soporte recurrente, no las horas de implementación inicial.")
     dim["horizon_months"] = horizon_months
     dim["managed_months"] = horizon_months  # soporte desde el mes 1 hasta fin del plazo seleccionado
     with st.expander("Editar supuestos de dimensionamiento", expanded=False):
@@ -192,7 +192,7 @@ with tab_dim:
             with col:
                 dim["multipliers"][name] = st.number_input(f"Factor {name}", min_value=0.0, max_value=3.0, value=float(factor), step=0.05, format="%.2f", key=f"dim_factor_{name}")
 
-    st.caption(f"**Plazo seleccionado:** {horizon_months} de 12 meses | **Alcance de ingeniería:** {horizon_months}/12 del esfuerzo base (antes del factor de escenario) | **Soporte:** {horizon_months} mensualidades desde el mes 1 | **Assessment:** un pago único.")
+    st.caption(f"**Plazo seleccionado:** {horizon_months} de 24 meses posibles | **Alcance de ingeniería:** {min(horizon_months, 12)}/12 del esfuerzo inicial (antes del factor de escenario) | **Soporte:** {horizon_months} mensualidades desde el mes 1 | **Assessment:** un pago único.")
     dimensioning = calculate_dimensioning(dim, float(config["financial_inputs"]["approved_modernization_budget"]))
     base = dimensioning["base"]
     p1, p2, p3 = st.columns(3)
@@ -230,12 +230,12 @@ with tab_dim:
     st.dataframe(detailed.style.format({"Horas base":"{:,.0f}",
         "Horas ajustadas":"{:,.2f}","Tarifa USD/h":"${:,.2f}","Total USD":"${:,.2f}"}),
         use_container_width=True, hide_index=True)
-    st.caption(f"Cálculo: horas de ingeniería × tarifa × ({horizon_months}/12) × factor de escenario + assessment único de USD {dim['assessment_usd']:,.2f} + {horizon_months} mensualidades × USD {dim['managed_monthly_usd']:,.2f}. Menos meses significa menos alcance, no ejecución acelerada del mismo proyecto. Tarifas referenciales, no oficiales de Escala.")
+    st.caption(f"Cálculo: horas de ingeniería × tarifa × (mínimo entre {horizon_months} y 12)/12 × factor de escenario + assessment único de USD {dim['assessment_usd']:,.2f} + {horizon_months} mensualidades × USD {dim['managed_monthly_usd']:,.2f}. Menos de 12 meses implica menos alcance; después del mes 12 se extiende únicamente el soporte. Tarifas referenciales, no oficiales de Escala.")
     st.caption("La Parte B estima honorarios de servicios, no consumo AWS. Esta oportunidad preliminar es distinta de la oferta de la Parte E y no se suma a ella.")
     with st.expander("Referencia de servicios AWS y archivos del dimensionamiento"):
         original = Path(__file__).parent / "data" / "excel_originales" / "Grupo_Fenix_Dimensionamiento_12M_Con_Recursos.xlsx"
         if original.exists():
-            st.download_button("Descargar Excel original de dimensionamiento", original.read_bytes(), file_name=original.name, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dim_excel")
+            st.download_button("Descargar Excel actualizado de dimensionamiento", original.read_bytes(), file_name=original.name, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dim_excel")
     st.download_button("Descargar escenarios de dimensionamiento (CSV)", dim_df.to_csv().encode("utf-8-sig"), file_name="fenix_dimensionamiento_escenarios.csv", mime="text/csv", key="dim_csv")
 
 with tab_offer:

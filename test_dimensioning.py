@@ -51,10 +51,20 @@ class DimensioningCases(unittest.TestCase):
         self.assertAlmostEqual(out['base']['total'], 12000 + 10125 + 531200/12)
         self.assertTrue(out['scenarios']['Conservador']['total'] < out['base']['total'] < out['scenarios']['Alto']['total'])
 
+    def test_extended_duration_keeps_implementation_and_adds_support_only(self):
+        for months, expected in [(13, 674825), (18, 725450), (24, 786200)]:
+            self.d['horizon_months'] = months
+            outcome = calculate_dimensioning(self.d, 1800000)['base']
+            self.assertAlmostEqual(outcome['engineer_total'], 531200)
+            self.assertAlmostEqual(outcome['assessment'], 12000)
+            self.assertAlmostEqual(outcome['recurring'], months * 10125)
+            self.assertAlmostEqual(outcome['total'], expected)
+
     def test_invalid_duration_rejected(self):
-        self.d['horizon_months'] = 0
-        with self.assertRaises(ValueError):
-            calculate_dimensioning(self.d, 1800000)
+        for months in (0, 25):
+            self.d['horizon_months'] = months
+            with self.assertRaises(ValueError):
+                calculate_dimensioning(self.d, 1800000)
 
     def test_editable_inputs_recalculate(self):
         self.d['service_lines'][0]['hours'] += 10
