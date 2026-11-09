@@ -225,7 +225,6 @@ with tab_dim:
         "Horas ajustadas":"{:,.2f}","Tarifa USD/h":"${:,.2f}","Total USD":"${:,.2f}"}),
         use_container_width=True, hide_index=True)
     st.caption(f"A los honorarios de ingeniería se suman el assessment único de USD {dim['assessment_usd']:,.2f} y el soporte de {dim['managed_months']} meses × USD {dim['managed_monthly_usd']:,.2f}. Los multiplicadores alteran horas de ingeniería, no los cargos fijos.")
-    st.info("Este cálculo estima honorarios de servicios, no consumo de AWS. La oportunidad de USD 664,700 NO se suma a la oferta de USD 1.5M de la siguiente pestaña.")
     with st.expander("Referencia de servicios AWS y archivos del dimensionamiento"):
         st.write("El Excel original estima además cargos AWS ilustrativos por **USD 11,620.80 al año** (KMS, CloudWatch, AWS Backup, Glue, QuickSight y CodePipeline). Son gastos AWS potenciales separados, no ingresos de Escala.")
         original = Path(__file__).parent / "data" / "excel_originales" / "Grupo_Fenix_Dimensionamiento_12M_Con_Recursos.xlsx"
