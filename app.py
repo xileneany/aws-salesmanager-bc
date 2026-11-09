@@ -12,8 +12,8 @@ st.set_page_config(page_title="Grupo Fénix | Caso financiero", layout="wide", p
 config = copy.deepcopy(load_config())
 f = config["financial_inputs"]
 
-st.title("Grupo Fénix — caso financiero de modernización")
-st.caption("Modelo de escenarios hipotéticos. No es una cotización oficial de Escala ni una proyección validada del cliente.")
+st.title("Grupo Fénix - caso financiero de modernización")
+st.caption("Modelo de escenarios hipotéticos")
 
 with st.sidebar:
     st.header("Supuestos editables")
@@ -156,6 +156,5 @@ st.subheader("Transparencia de supuestos")
 st.write("**Costo por hora de interrupción:** facturación anual / (días × horas) × ventas expuestas × porcentaje no recuperable × margen de contribución.")
 st.write("**Beneficio por créditos:** solicitudes mensuales × mejora en conversión (puntos porcentuales) × margen NETO por crédito adicional.")
 st.write("**VPN:** flujos netos mensuales descontados con tasa anual editable. **TCO incremental:** inversión + soporte adicional + nuevos costos cloud modelados.")
-st.warning("El ROI tecnológico incluye USD 1.5M de servicios técnicos, no la reserva comercial de USD 300K salvo que marques la opción correspondiente. Los beneficios técnicos anteriores no han sido revalidados para el alcance reducido: prueba un factor de realización inferior a 100%. La meta de ahorro del 15% en TI total sigue sin estar demostrada.")
 
 st.download_button("Descargar supuestos del modelo (JSON)", json.dumps(config,ensure_ascii=False,indent=2).encode("utf-8"),"fenix_supuestos_editados.json",mime="application/json")
